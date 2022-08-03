@@ -1,0 +1,37 @@
+services:
+  it610-aspdotnet:
+    build: ./ASP/
+    ports:
+      - "80:80"
+    depends_on:
+      - "it610-mssql"
+    volumes:
+      - "//var/run/docker.sock:/var/run/docker.sock"
+      - "./ASP:/ASP"
+      - ASP-containers:/var/lib/containers
+    networks:
+       it610-net:
+         ipv4_address: 172.33.0.20
+  it610-mssql:
+    build: ./MSSQL/
+    ports:
+      - "1433:1433"
+    privileged: true
+    cap_add:
+      - ALL
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - MSSQL-containers:/var/lib/containers
+    networks:
+       it610-net:
+         ipv4_address: 172.33.0.30
+volumes:
+  ASP-containers:
+  MSSQL-containers:
+
+networks:
+  it610-net:
+    ipam:
+     config:
+       - subnet: 172.33.0.0/24
+         gateway: 172.33.0.1
